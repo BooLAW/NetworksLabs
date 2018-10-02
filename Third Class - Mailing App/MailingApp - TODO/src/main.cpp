@@ -12,7 +12,29 @@ enum class MainState
 	Fail,
 	Exit
 };
+/*
+Send Login Request serialized from the client to the server, and the server will deserializeit
+Client::SendPacketLogin();
+Server::OnPacketRecieved();
+Server::OnPacketRecievedLogin();
 
+Query all messages
+Client::SendPacketQueryMessages();
+Server::OnPacketReceivedAllMessages();
+Server::SendPacket();
+Client::OnPacketReceivedQuery();
+Send Message
+Client::SendPacketSendMessage();
+Server::OnPacketReceivedSendMessage();
+
+Extra funcionality:
+- Password Login.
+- Delete Message.
+- Search.
+- Date and Time.
+
+
+*/
 int main(int argc, char **argv)
 {
 	int result = EXIT_FAILURE;
