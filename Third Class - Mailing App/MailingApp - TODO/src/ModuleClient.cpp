@@ -94,11 +94,14 @@ void ModuleClient::onPacketReceivedQueryAllMessagesResponse(const InputMemoryStr
 	messengerState = MessengerState::ShowingMessages;
 }
 
-void ModuleClient::sendPacketLogin(const char * username)
+void ModuleClient::sendPacketLogin(const char * username)//1
 {
 	OutputMemoryStream stream;
 
 	// TODO: Serialize Login (packet type and username)
+
+
+
 
 	// TODO: Use sendPacket() to send the packet
 
