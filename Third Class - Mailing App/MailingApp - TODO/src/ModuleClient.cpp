@@ -86,9 +86,19 @@ void ModuleClient::onPacketReceivedQueryAllMessagesResponse(const InputMemoryStr
 	messages.clear();
 
 	uint32_t messageCount;
-	// TODO: Deserialize the number of messages
+	// DONE: Deserialize the number of messages
+	stream.Read(messageCount);
 
-	// TODO: Deserialize messages one by one and push_back them into the messages vector
+
+	// DONE: Deserialize messages one by one and push_back them into the messages vector
+	for (uint32_t i = 0; i < messageCount; ++i) {
+		Message my_message;
+		stream.Read(my_message.senderUsername);
+		stream.Read(my_message.receiverUsername);
+		stream.Read(my_message.subject);
+		stream.Read(my_message.body);
+		messages.push_back(my_message);
+	}
 	// NOTE: The messages vector is an attribute of this class
 
 	messengerState = MessengerState::ShowingMessages;
@@ -98,13 +108,13 @@ void ModuleClient::sendPacketLogin(const char * username)//1
 {
 	OutputMemoryStream stream;
 
-	// TODO: Serialize Login (packet type and username)
+	// DONE: Serialize Login (packet type and username)
 
 	stream.Write(PacketType::LoginRequest);
 	stream.Write(std::string(username));
 
 
-	// TODO: Use sendPacket() to send the packet
+	// DONE: Use sendPacket() to send the packet
 	sendPacket(stream);
 
 	messengerState = MessengerState::RequestingMessages;
@@ -114,9 +124,10 @@ void ModuleClient::sendPacketQueryMessages()
 {
 	OutputMemoryStream stream;
 
-	// TODO: Serialize message (only the packet type)
-
-	// TODO: Use sendPacket() to send the packet
+	// DONE: Serialize message (only the packet type)
+	stream.Write(PacketType::QueryAllMessagesRequest);
+	// DONE: Use sendPacket() to send the packet
+	sendPacket(stream);
 
 	messengerState = MessengerState::ReceivingMessages;
 }
@@ -125,11 +136,16 @@ void ModuleClient::sendPacketSendMessage(const char * receiver, const char * sub
 {
 	OutputMemoryStream stream;
 
-	// TODO: Serialize message (packet type and all fields in the message)
+	// DONE: Serialize message (packet type and all fields in the message)
+	stream.Write(PacketType::SendMessageRequest);
+	stream.Write(std::string(senderBuf));
+	stream.Write(std::string(receiver));
+	stream.Write(std::string(subject));
+	stream.Write(std::string(message));
 	// NOTE: remember that senderBuf contains the current client (i.e. the sender of the message)
 
-	// TODO: Use sendPacket() to send the packet
-
+	// DONE: Use sendPacket() to send the packet
+	sendPacket(stream);
 	messengerState = MessengerState::RequestingMessages;
 }
 
