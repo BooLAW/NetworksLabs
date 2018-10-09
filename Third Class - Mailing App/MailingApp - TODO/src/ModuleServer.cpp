@@ -110,6 +110,16 @@ void ModuleServer::sendPacketQueryAllMessagesResponse(SOCKET socket, const std::
 	// -- serialize the packet type
 	// -- serialize the array size
 	// -- serialize the messages in the array
+	outStream.Write(PacketType::QueryAllMessagesResponse);
+	outStream.Write(messages.size());
+
+	for (int i = 0; i < messages.size(); i++)
+	{
+		outStream.Write(messages[i].body);
+		outStream.Write(messages[i].receiverUsername);
+		outStream.Write(messages[i].senderUsername);
+		outStream.Write(messages[i].subject);
+	}
 
 	// TODO: Send the packet (pass the outStream to the sendPacket function)
 }
@@ -117,7 +127,11 @@ void ModuleServer::sendPacketQueryAllMessagesResponse(SOCKET socket, const std::
 void ModuleServer::onPacketReceivedSendMessage(SOCKET socket, const InputMemoryStream & stream)
 {
 	Message message;
-	// TODO: Deserialize the packet (all fields in Message)
+	// DONE: Deserialize the packet (all fields in Message)
+	stream.Read(message.body);
+	stream.Read(message.receiverUsername);
+	stream.Read(message.senderUsername);
+	stream.Read(message.subject);
 
 	// Insert the message in the database
 	database()->insertMessage(message);
