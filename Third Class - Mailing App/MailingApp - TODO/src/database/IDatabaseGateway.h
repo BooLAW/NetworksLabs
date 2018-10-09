@@ -6,7 +6,7 @@
 class IDatabaseGateway
 {
 public:
-
+//this database is used if we don't have and sql data to input
 	// Constructor and destructor
 
 	IDatabaseGateway() { }
