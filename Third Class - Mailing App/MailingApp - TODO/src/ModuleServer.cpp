@@ -61,7 +61,7 @@ void ModuleServer::onPacketReceived(SOCKET socket, const InputMemoryStream & str
 	PacketType packetType;
 
 	// TODO: Deserialize the packet type
-
+	stream.Read(packetType);
 	LOG("onPacketReceived() - packetType: %d", (int)packetType);
 
 	switch (packetType)
@@ -85,7 +85,7 @@ void ModuleServer::onPacketReceivedLogin(SOCKET socket, const InputMemoryStream 
 {
 	std::string loginName;
 	// TODO: Deserialize the login username into loginName
-
+	stream.Read(loginName);
 	// Register the client with this socket with the deserialized username
 	ClientStateInfo & client = getClientStateInfoForSocket(socket);
 	client.loginName = loginName;
