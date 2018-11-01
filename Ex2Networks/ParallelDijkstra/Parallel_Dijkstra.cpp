@@ -9,6 +9,10 @@
 #include <condition_variable>
 #include <chrono>
 
+//Students Involved:
+	//Pau Bonet, Andreu Sacasas, Marc de Pedro
+
+
 // Number of nodes in the graph G
 const int V = 8;
 const int Inf = INT_MAX;
