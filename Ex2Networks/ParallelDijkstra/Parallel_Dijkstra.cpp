@@ -66,14 +66,16 @@ void parallel_dijkstra(int id, int dist[V], int prev[V])
 
 		// Wait for incoming events (from other nodes) and receive them
 		{
-			// - TODO 6-a: lock this thread mutex to protect access to global data
+			
+			std::unique_lock<std::mutex> lck(mutexes[u]); // - DONE 6-a: lock this thread mutex to protect access to global data
 
 			if (messages[u].empty())
 			{
-				// TODO 6-b: wait for a message from another node
+				event[u].wait(lck);// DONE 6-b: wait for a message from another node
 			}
-
-			// TODO 6-c: check if 'shouldFinish' is true to finish this thread
+			// DONE 6-c: check if 'shouldFinish' is true to finish this thread
+			if (shouldFinish) 
+				break;
 
 			// Get the incoming message
 			Message msg(messages[u].front());
@@ -104,9 +106,12 @@ void parallel_dijkstra(int id, int dist[V], int prev[V])
 			continue;
 		}
 
-		// TODO 7: Create a message for the neigbouring nodes
+		
+		// DONE 7: Create a message for the neigbouring nodes
+		Message m;
 		// - the message needs to contain the information about this thread's node
-
+		m.sender = u;
+		m.dist = dist[u];
 
 		// Send messages to neighbour nodes to update their state
 		for (int v = 0; v < V; ++v)
@@ -114,11 +119,10 @@ void parallel_dijkstra(int id, int dist[V], int prev[V])
 			int edge_dist = G[u][v];
 			if (edge_dist != Inf)
 			{
-				// TODO 8: Send the message to the neighbor
-				// - lock the neighbor's mutex
-				// - enqueue the message into its queue
-				// - notify the neighbor about this event (use notify_one)
-
+				// DONE 8: Send the message to the neighbor
+				std::unique_lock<std::mutex> lck(mutexes[v]);				// - lock the neighbor's mutex
+				messages[v].push(m);										// - enqueue the message into its queue
+				event[v].notify_one();										// - notify the neighbor about this event (use notify_one)
 			}
 		}
 	}
