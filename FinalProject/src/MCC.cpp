@@ -27,6 +27,7 @@ MCC::~MCC()
 void MCC::start()
 {
 	// TODO: Set the initial state
+	setState(ST_INIT);
 }
 
 void MCC::update()
@@ -38,6 +39,30 @@ void MCC::update()
 		//       Use the functions registerIntoYellowPages and unregisterFromYellowPages
 		//       so that this switch statement remains clean and readable
 		// - Set the next state when needed ...
+
+	case ST_INIT:
+	{
+		registerIntoYellowPages();
+		setState(ST_REGISTERING);
+		break;
+	}
+	case ST_REGISTERING:
+	{
+		break;
+	}
+	case ST_IDLE:
+	{
+		break;
+	}
+	case ST_UNREGISTERING:
+	{
+		break;
+	}
+	case ST_FINISHED:
+	{
+		break;
+	}
+
 	}
 }
 
