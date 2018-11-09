@@ -162,6 +162,8 @@ void ModuleYellowPages::OnPacketReceived(TCPSocketPtr socket, InputMemoryStream 
 		//iLog << " - Contributed Item ID: " << inPacketData.itemId;
 		//iLog << " - Remote host address: " << hostAddress;
 
+		//PROJTODO2
+
 		// TODO: Serialize and send PacketRegisterMCCAck (make it in Packets.h first)
 		// 1 - Create an OutputMemoryStream
 		// 2 - Create a PacketHeader and fill it
@@ -189,6 +191,8 @@ void ModuleYellowPages::OnPacketReceived(TCPSocketPtr socket, InputMemoryStream 
 
 		//iLog << " - MCC Agent ID: " << inPacketHead.srcAgentId;
 		//iLog << " - Contributed Item ID: " << inPacketData.itemId;
+
+		//PROJTODO2
 
 		// TODO: Serialize and send PacketRegisterMCCAck (make the packet in Packets.h first)
 		// 1 - Create an OutputMemoryStream
