@@ -149,6 +149,8 @@ void ModuleNodeCluster::OnAccepted(TCPSocketPtr socket)
 
 void ModuleNodeCluster::OnPacketReceived(TCPSocketPtr socket, InputMemoryStream & stream)
 {
+	// PROJTODO3
+
 	//iLog << "OnPacketReceived";
 
 	// TODO 1: Declare a PacketHeader and deserialize it

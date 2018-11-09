@@ -41,8 +41,20 @@ public:
 	}
 };
 
-// TODO: PacketRegisterMCC
+// TODO: PacketRegisterMCC	
+class PacketRegisterMCC {
+public:
+	uint16_t itemID;
+	void Read(InputMemoryStream &stream) {
+		// TODO: Deserialize fields
+		stream.Read(itemID);
+	}
+	void Write(OutputMemoryStream &stream) {
+		// TODO: Serialize fields
+		stream.Write(itemID);
 
+	}
+};
 // TODO: PacketRegisterMCCAck   <-- Do we need an actual data packet? Think...
 
 // TODO: PacketUnregisterMCC
