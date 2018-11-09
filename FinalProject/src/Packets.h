@@ -35,9 +35,16 @@ public:
 	{ }
 	void Read(InputMemoryStream &stream) {
 		// TODO: Deserialize fields
+		stream.Read(packetType);
+		stream.Read(srcAgentId);
+		stream.Read(dstAgentId);
+
 	}
 	void Write(OutputMemoryStream &stream) {
 		// TODO: Serialize fields
+		stream.Write(packetType);
+		stream.Write(srcAgentId);
+		stream.Write(dstAgentId);
 	}
 };
 
@@ -58,5 +65,17 @@ public:
 // TODO: PacketRegisterMCCAck   <-- Do we need an actual data packet? Think...
 
 // TODO: PacketUnregisterMCC
+class PacketUnRegisterMCC {
+public:
+	uint16_t itemID;
+	void Read(InputMemoryStream &stream) {
+		// TODO: Deserialize fields
+		stream.Read(itemID);
+	}
+	void Write(OutputMemoryStream &stream) {
+		// TODO: Serialize fields
+		stream.Write(itemID);
 
+	}
+};
 // TODO: PacketUnregisterMCCAck <-- Do we need an actual data packet? Think...
