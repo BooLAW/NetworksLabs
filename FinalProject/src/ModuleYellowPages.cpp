@@ -166,8 +166,13 @@ void ModuleYellowPages::OnPacketReceived(TCPSocketPtr socket, InputMemoryStream 
 
 		// TODO: Serialize and send PacketRegisterMCCAck (make it in Packets.h first)
 		// 1 - Create an OutputMemoryStream
+		OutputMemoryStream oms;
 		// 2 - Create a PacketHeader and fill it
+		PacketRegisterMCC p_MCC;
+		p_MCC.Write(oms);
 		// 3 - Send the packet through the socket
+		socket->SendPacket(&p_MCC, sizeof(PacketRegisterMCC));
+
 	}
 	else if (inPacketHead.packetType == PacketType::UnregisterMCC)
 	{
@@ -195,9 +200,14 @@ void ModuleYellowPages::OnPacketReceived(TCPSocketPtr socket, InputMemoryStream 
 		//PROJTODO2
 
 		// TODO: Serialize and send PacketRegisterMCCAck (make the packet in Packets.h first)
+		
 		// 1 - Create an OutputMemoryStream
+		OutputMemoryStream oms;
 		// 2 - Create a PacketHeader and fill it
+		PacketRegisterMCC p_MCC;
+		p_MCC.Write(oms);
 		// 3 - Send the packet through the socket
+		socket->SendPacket(&p_MCC,sizeof(PacketRegisterMCC));
 	}
 }
 
