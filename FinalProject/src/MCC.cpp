@@ -99,10 +99,13 @@ bool MCC::negotiationAgreement() const
 bool MCC::registerIntoYellowPages()
 {
 	// TODO: Create a PacketHeader (make it in Packets.h)
+	PacketHeader packet_header;
 
 	// TODO: Create a PacketRegisterMCC (make it in Packets.h)
+	PacketRegisterMCC packet_register_mcc;
 
 	// TODO: Serialize both packets into an OutputMemoryStream
+
 
 	// TODO: Send the stream (Agent::sendPacketToYellowPages)
 
@@ -112,8 +115,10 @@ bool MCC::registerIntoYellowPages()
 bool MCC::unregisterFromYellowPages()
 {
 	// TODO: Create a PacketHeader (make it in Packets.h)
+	PacketHeader packet_header;
 
 	// TODO: Create a PacketUnregisterMCC (make it in Packets.h)
+	//PacketUnregisterMCC packet_unregister_mcc
 
 	// TODO: Serialize both packets into an OutputMemoryStream
 
