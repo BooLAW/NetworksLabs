@@ -13,7 +13,17 @@ enum class PacketType
 	RegisterMCC,
 	RegisterMCCAck,
 	UnregisterMCC,
-	UnregisterMCCAck,
+
+	// MCP <-> YP
+	QueryMCCsForItem,
+	ReturnMCCsForItem,
+	
+	// MCP <-> MCC
+	// TODO
+	
+	// UCP <-> UCC
+	// TODO
+	
 	Last
 };
 
@@ -34,48 +44,76 @@ public:
 		dstAgentId(NULL_AGENT_ID)
 	{ }
 	void Read(InputMemoryStream &stream) {
-		// TODO: Deserialize fields
 		stream.Read(packetType);
 		stream.Read(srcAgentId);
 		stream.Read(dstAgentId);
-
 	}
 	void Write(OutputMemoryStream &stream) {
-		// TODO: Serialize fields
 		stream.Write(packetType);
 		stream.Write(srcAgentId);
 		stream.Write(dstAgentId);
 	}
 };
 
-// TODO: PacketRegisterMCC	
+/**
+ * To register a MCC we need to know which resource/item is
+ * being provided by the MCC agent.
+ */
 class PacketRegisterMCC {
 public:
-	uint16_t itemID;
+	uint16_t itemId; // Which item has to be registered?
 	void Read(InputMemoryStream &stream) {
-		// TODO: Deserialize fields
-		stream.Read(itemID);
+		stream.Read(itemId);
 	}
 	void Write(OutputMemoryStream &stream) {
-		// TODO: Serialize fields
-		stream.Write(itemID);
-
+		stream.Write(itemId);
 	}
 };
-// TODO: PacketRegisterMCCAck   <-- Do we need an actual data packet? Think...
 
-// TODO: PacketUnregisterMCC
-class PacketUnRegisterMCC {
+/**
+* The information is the same required for PacketRegisterMCC so...
+*/
+using PacketUnregisterMCC = PacketRegisterMCC;
+
+/**
+* The information is the same required for PacketRegisterMCC so...
+*/
+using PacketQueryMCCsForItem = PacketRegisterMCC;
+
+/**
+ * This packet is the response for PacketQueryMCCsForItem and
+ * is sent by an MCP (MultiCastPetitioner) agent.
+ * It contains a list of the addresses of MCC agents contributing
+ * with the item specified by the PacketQueryMCCsForItem.
+ */
+class PacketReturnMCCsForItem {
 public:
-	uint16_t itemID;
+	std::vector<AgentLocation> mccAddresses;
 	void Read(InputMemoryStream &stream) {
-		// TODO: Deserialize fields
-		stream.Read(itemID);
+		uint16_t count;
+		stream.Read(count);
+		mccAddresses.resize(count);
+		for (auto &mccAddress : mccAddresses) {
+			mccAddress.Read(stream);
+		}
 	}
 	void Write(OutputMemoryStream &stream) {
-		// TODO: Serialize fields
-		stream.Write(itemID);
-
+		auto count = static_cast<uint16_t>(mccAddresses.size());
+		stream.Write(count);
+		for (auto &mccAddress : mccAddresses) {
+			mccAddress.Write(stream);
+		}
 	}
 };
-// TODO: PacketUnregisterMCCAck <-- Do we need an actual data packet? Think...
+
+
+
+// MCP <-> MCC
+
+//TODO
+
+
+
+// UCP <-> UCC
+
+// TODO

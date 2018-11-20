@@ -44,6 +44,10 @@ public:
 
 	virtual bool cleanUp() { return true;  }
 
+	virtual bool invalidateDeviceObjects() { return true; }
+
+	virtual bool restoreDeviceObjects() { return true; }
+
 private:
 
 	bool active = false;

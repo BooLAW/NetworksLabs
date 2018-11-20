@@ -5,6 +5,7 @@
 // Module declarations
 class Module;
 class ModuleWindow;
+class ModuleTextures;
 class ModuleNetworkManager;
 class ModuleAgentContainer;
 class ModuleLogView;
@@ -39,6 +40,15 @@ public:
 	bool cleanUp();
 
 
+	// Called from the window module to destroy/restore GPU objects
+
+	friend ModuleWindow;
+
+	bool invalidateDeviceObjects();
+
+	bool restoreDeviceObjects();
+
+
 private:
 
 	// Private lifetime methods
@@ -56,6 +66,7 @@ public:
 
 	// Modules
 	ModuleWindow *modWindow = nullptr;
+	ModuleTextures *modTextures = nullptr;
 	ModuleNetworkManager *networkManager = nullptr;
 	ModuleAgentContainer *agentContainer = nullptr;
 	ModuleLogView *modLogView = nullptr;

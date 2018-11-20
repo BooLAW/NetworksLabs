@@ -19,12 +19,13 @@ const char *windowTitle = "SiSiMEX";
 static WNDCLASSEX wc;                                // Window class
 static HWND hwnd = NULL;                             // Window handle
 static LPDIRECT3D9 pD3D;                             // Direct3d9 pointer
-static LPDIRECT3DDEVICE9        g_pd3dDevice = NULL; // Direct3d9 device pointer
+LPDIRECT3DDEVICE9        g_pd3dDevice = NULL; // Direct3d9 device pointer
 static D3DPRESENT_PARAMETERS    g_d3dpp;             // Direct3d9 parameters
 static MSG msg;                                      // Window message
 
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
@@ -35,12 +36,14 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_SIZE:
 		if (g_pd3dDevice != NULL && wParam != SIZE_MINIMIZED)
 		{
+			App->invalidateDeviceObjects();
 			ImGui_ImplDX9_InvalidateDeviceObjects();
 			g_d3dpp.BackBufferWidth = LOWORD(lParam);
 			g_d3dpp.BackBufferHeight = HIWORD(lParam);
 			HRESULT hr = g_pd3dDevice->Reset(&g_d3dpp);
 			if (hr == D3DERR_INVALIDCALL)
 				IM_ASSERT(0);
+			App->restoreDeviceObjects();
 			ImGui_ImplDX9_CreateDeviceObjects();
 		}
 		return 0;

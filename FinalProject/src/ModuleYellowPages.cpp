@@ -55,6 +55,9 @@ bool ModuleYellowPages::updateGUI()
 {
 	ImGui::Begin("Yellow Pages");
 
+	// Number of sockets
+	App->networkManager->drawInfoGUI();
+
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
 	if (ImGui::CollapsingHeader("Registered MCCs", flags))
 	{
@@ -90,9 +93,9 @@ bool ModuleYellowPages::stop()
 
 bool ModuleYellowPages::startService()
 {
-	iLog << "---------------------------------------------------";
-	iLog << "              SiSiMEX: Yellow Pages                ";
-	iLog << "---------------------------------------------------";
+	iLog << "--------------------------------------------";
+	iLog << "           SiSiMEX: Yellow Pages            ";
+	iLog << "--------------------------------------------";
 	iLog << "";
 
 	// Create listen socket
@@ -135,54 +138,42 @@ void ModuleYellowPages::OnAccepted(TCPSocketPtr socket)
 
 void ModuleYellowPages::OnPacketReceived(TCPSocketPtr socket, InputMemoryStream &stream)
 {
-	iLog << "OnPacketReceived: ";
-
-	// TODO: Deserialize PacketHeader (Make it in Packets.h first)
+	// Read packet header
 	PacketHeader inPacketHead;
+	inPacketHead.Read(stream);
 
 	if (inPacketHead.packetType == PacketType::RegisterMCC)
 	{
-		iLog << "PacketType::RegisterMCC";
-
-		// TODO: Deserialize PacketRegisterMCC (make it in Packets.h first)
-		uint16_t itemId = NULL_ITEM_ID;
+		// Read the packet
+		PacketRegisterMCC inPacketData;
+		inPacketData.Read(stream);
 
 		// Register the MCC into the yellow pages
 		AgentLocation mcc;
 		mcc.hostIP = socket->RemoteAddress().GetIPString();
 		mcc.hostPort = LISTEN_PORT_AGENTS;
 		mcc.agentId = inPacketHead.srcAgentId;
-		_mccByItem[itemId].push_back(mcc);
+		_mccByItem[inPacketData.itemId].push_back(mcc);
 
 		// Host address
 		std::string hostAddress = socket->RemoteAddress().GetString();
 
-		//Some logging
-		//iLog << " - MCC Agent ID: " << inPacketHead.srcAgentId;
-		//iLog << " - Contributed Item ID: " << inPacketData.itemId;
-		//iLog << " - Remote host address: " << hostAddress;
-
-		//PROJTODO2
-
-		// TODO: Serialize and send PacketRegisterMCCAck (make it in Packets.h first)
-		// 1 - Create an OutputMemoryStream
-		OutputMemoryStream oms;
-		// 2 - Create a PacketHeader and fill it
-		PacketRegisterMCC p_MCC;
-		p_MCC.Write(oms);
-		// 3 - Send the packet through the socket
-		socket->SendPacket(&p_MCC, sizeof(PacketRegisterMCC));
-
+		// Send RegisterMCCAck packet
+		OutputMemoryStream outStream;
+		PacketHeader outPacket;
+		outPacket.packetType = PacketType::RegisterMCCAck;
+		outPacket.dstAgentId = inPacketHead.srcAgentId;
+		outPacket.Write(outStream);
+		socket->SendPacket(outStream.GetBufferPtr(), outStream.GetSize());
 	}
 	else if (inPacketHead.packetType == PacketType::UnregisterMCC)
 	{
-		iLog << "PacketType::UnregisterMCC";
-
-		// TODO: Deserialize PacketUnregisterMCC (make it in Packets.h first)
-		uint16_t itemId = NULL_ITEM_ID;
+		// Read the packet
+		PacketUnregisterMCC inPacketData;
+		inPacketData.Read(stream);
 
 		// Unregister the MCC from the yellow pages
-		std::list<AgentLocation> &mccs(_mccByItem[itemId]);
+		std::list<AgentLocation> &mccs(_mccByItem[inPacketData.itemId]);
 		for (auto it = mccs.begin(); it != mccs.end();) {
 			if (it->agentId == inPacketHead.srcAgentId) {
 				auto oldIt = it++;
@@ -194,25 +185,47 @@ void ModuleYellowPages::OnPacketReceived(TCPSocketPtr socket, InputMemoryStream 
 			}
 		}
 
-		//iLog << " - MCC Agent ID: " << inPacketHead.srcAgentId;
-		//iLog << " - Contributed Item ID: " << inPacketData.itemId;
+		//// Send RegisterMCCAck packet
+		//OutputMemoryStream outStream;
+		//PacketHeader outPacket;
+		//outPacket.packetType = PacketType::UnregisterMCCAck;
+		//outPacket.dstAgentId = inPacketHead.srcAgentId;
+		//outPacket.Write(outStream);
+		//socket->SendPacket(outStream.GetBufferPtr(), outStream.GetSize());
+	}
+	else if (inPacketHead.packetType == PacketType::QueryMCCsForItem)
+	{
+		// Read packet
+		PacketQueryMCCsForItem inPacketData;
+		inPacketData.Read(stream);
 
-		//PROJTODO2
+		// Response packet
+		PacketReturnMCCsForItem outPacketData;
 
-		// TODO: Serialize and send PacketRegisterMCCAck (make the packet in Packets.h first)
-		
-		// 1 - Create an OutputMemoryStream
-		OutputMemoryStream oms;
-		// 2 - Create a PacketHeader and fill it
-		PacketRegisterMCC p_MCC;
-		p_MCC.Write(oms);
-		// 3 - Send the packet through the socket
-		socket->SendPacket(&p_MCC,sizeof(PacketRegisterMCC));
+		// Obtain the MCCAddresses
+		auto itemId = inPacketData.itemId;
+		auto &mccAddressList = _mccByItem[itemId];
+		for (auto &mccAddress : mccAddressList) {
+			outPacketData.mccAddresses.push_back(mccAddress);
+		}
+
+		// Send response packet
+		OutputMemoryStream outStream;
+		PacketHeader outPacketHead;
+		outPacketHead.packetType = PacketType::ReturnMCCsForItem;
+		outPacketHead.dstAgentId = inPacketHead.srcAgentId;
+		outPacketHead.Write(outStream);
+		outPacketData.Write(outStream);
+		socket->SendPacket(outStream.GetBufferPtr(), outStream.GetSize());
+	}
+	else
+	{
+		wLog << "OnPacketReceived() - Unexpected PacketType.";
 	}
 }
 
 void ModuleYellowPages::OnDisconnected(TCPSocketPtr socket)
 {
 	// Nothing to do
-	iLog << "Socket disconnected gracefully";
+	//iLog << "Socket disconnected gracefully";
 }
