@@ -2230,12 +2230,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e850fb8a9035b1b4ca68b5b4f82e0767, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  particlesPrefab: {fileID: 1499359237989140, guid: 39d5710185dabdf4eb58d1d398611223,
+    type: 2}
   nameLabelPosition: {fileID: 4000768113837924}
   nameLabelPrefab: {fileID: 4406603612214696, guid: 165184253b5d72d4da3604f8f5f3d0a7,
     type: 2}
   playerName: Player
-  particlesPrefab: {fileID: 1499359237989140, guid: 39d5710185dabdf4eb58d1d398611223,
-    type: 2}
 --- !u!114 &114076309825731026
 MonoBehaviour:
   m_ObjectHideFlags: 1

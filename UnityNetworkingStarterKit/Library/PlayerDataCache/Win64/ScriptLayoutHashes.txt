@@ -1,6 +1,6 @@
 WindowsStandalone
 PlayerPath?
-C:/Users/andreusv2/Desktop/UnityNetworkingStarterKit/Build/Net Test 3.exe
+C:/Users/Marc/Desktop/Net Test 3.exe
 SceneListBegin?
 Assets/Scenes/MainScene.unity
 SceneListEnd?

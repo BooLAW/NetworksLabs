@@ -156,6 +156,16 @@ public class PlayerController : NetworkBehaviour
         float horizontalAxis = Input.GetAxis("Horizontal");
         float verticalAxis = Input.GetAxis("Vertical");
 
+        if (Input.GetButton("Jump"))
+        {
+            setAnimation("Jumping");
+        }
+
+        if (Input.GetButton("Fire1"))
+        {
+            setAnimation("Kicking");
+        }
+
         if (verticalAxis  > 0.0)
         {
             setAnimation("Running");
@@ -182,16 +192,6 @@ public class PlayerController : NetworkBehaviour
         {
             angle = horizontalAxis * Time.deltaTime * ROTATION_SPEED;
             transform.Rotate(new Vector3(0.0f, 1.0f, 0.0f), angle);
-        }
-
-        if (Input.GetButton("Jump"))
-        {
-            setAnimation("Jumping");
-        }
-
-        if (Input.GetButton("Fire1"))
-        {
-            setAnimation("Kicking");
         }
 	}
 
