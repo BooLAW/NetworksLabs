@@ -2,11 +2,7 @@
 #include "Globals.h"
 #include "AgentLocation.h"
 
-/**
- * Enumerated type for packets.
- * There must be a value for each kind of packet
- * containing extra data besides the Header.
- */
+
 enum class PacketType
 {
 	// MCC <-> YP
@@ -17,12 +13,16 @@ enum class PacketType
 	// MCP <-> YP
 	QueryMCCsForItem,
 	ReturnMCCsForItem,
-	
+
 	// MCP <-> MCC
-	// TODO
-	
+	RequestForNegotiation,
+	ReturnForNegotiation,
+
 	// UCP <-> UCC
-	// TODO
+	RequestForItem,
+	RequestForConstraint,
+	ResultForConstraint,
+	AcknowledgeForConstraint,
 	
 	Last
 };
@@ -110,10 +110,60 @@ public:
 
 // MCP <-> MCC
 
-//TODO
+class ResponseForNegotiation {
+public:
+	bool success;
+	AgentLocation LocationUCC;
+	void Read(InputMemoryStream &stream) {
+		stream.Read(success);
+		LocationUCC.Read(stream);
+	}
+	void Write(OutputMemoryStream &stream) {
+		stream.Write(success);
+		LocationUCC.Write(stream);
+	}
+};
 
 
 
 // UCP <-> UCC
+//CHANGE NAMES
+class RequestItem {
+public:
+	uint16_t Id;
 
-// TODO
+	void Read(InputMemoryStream &stream)
+	{
+		stream.Read(Id);
+	}
+	void Write(OutputMemoryStream &stream)
+	{
+		stream.Write(Id);
+	}
+};
+
+class RequestForConstraint {
+public:
+	uint16_t Id;
+	void Read(InputMemoryStream &stream)
+	{
+		stream.Read(Id);
+	}
+	void Write(OutputMemoryStream &stream)
+	{
+		stream.Write(Id);
+	}
+};
+
+class RequestForResult {
+public:
+	bool success;
+	void Read(InputMemoryStream &stream)
+	{
+		stream.Read(success);
+	}
+	void Write(OutputMemoryStream &stream)
+	{
+		stream.Write(success);
+	}
+};

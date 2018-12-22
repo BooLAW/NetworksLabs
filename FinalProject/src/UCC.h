@@ -15,7 +15,12 @@ public:
 	void stop() override;
 	UCC* asUCC() override { return this; }
 	void OnPacketReceived(TCPSocketPtr socket, const PacketHeader &packetHeader, InputMemoryStream &stream) override;
-
-	// TODO
+	bool NegotiationSuccess();
+	bool NegotiationClosed();
+	
+	bool negociation_success = false;
+	//parameters
+	uint16_t contributedItemId;
+	uint16_t constraintItemId;
 };
 

@@ -45,6 +45,7 @@ void MCC::update()
 		break;
 
 		// TODO: Handle other states
+	case ST_NEGOTIATIONS:
 
 	case ST_FINISHED:
 		destroy();
@@ -142,9 +143,19 @@ void MCC::unregisterFromYellowPages()
 void MCC::createChildUCC()
 {
 	// TODO: Create a unicast contributor
+	if (_ucc != nullptr)
+		destroyChildUCC();
+	iLog << "UCC Child created";
+	_ucc = App->agentContainer->createUCC(node(), contributedItemId(), constraintItemId());
+
 }
 
 void MCC::destroyChildUCC()
 {
 	// TODO: Destroy the unicast contributor child
+	if (_ucc != nullptr){
+		iLog << "UCC Child destroyed ";
+		_ucc->stop();
+		_ucc.reset();
+	}
 }

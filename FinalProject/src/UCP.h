@@ -11,7 +11,7 @@ class UCP :
 public:
 
 	// Constructor and destructor
-	UCP(Node *node, uint16_t requestedItemId, uint16_t contributedItemId, const AgentLocation &uccLoc, unsigned int searchDepth);
+	UCP(Node *node, uint16_t _requestedItemId, uint16_t _contributedItemId, const AgentLocation &uccLoc, unsigned int searchDepth);
 	~UCP();
 
 	// Agent methods
@@ -20,6 +20,22 @@ public:
 	UCP* asUCP() override { return this; }
 	void OnPacketReceived(TCPSocketPtr socket, const PacketHeader &packetHeader, InputMemoryStream &stream) override;
 
+	bool success = false;
 	// TODO
+
+
+	uint16_t requestedItemId;
+	uint16_t contributedItemId;
+	AgentLocation LocationUCC;
+	unsigned int searchDepth;
+
+	//new functions
+	bool RequestForItem();
+	bool ResultConstraint(bool result);
+	void createChildMCP(uint16_t newRequestedId);
+	void destroyChildMCP();
+
+	MCPPtr MCP;
+
 };
 
