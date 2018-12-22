@@ -1,7 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Networking;
+
+using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -63,20 +64,13 @@ public class PlayerController : NetworkBehaviour
                 CmdChangePlayerPrefab(playerPrefabIndex);
             }
             GUILayout.EndArea();
-
-            if (Event.current.Equals(Event.KeyboardEvent("9")))
-            {
-                CmdAddPumpkin();
-            }
             
             if (Input.GetButtonDown("Jump"))
             {
                 spawnParticles();
             }
-            
         }
     }
-
 
     // Animation syncing /////////////////////////////
 
@@ -156,16 +150,6 @@ public class PlayerController : NetworkBehaviour
         float horizontalAxis = Input.GetAxis("Horizontal");
         float verticalAxis = Input.GetAxis("Vertical");
 
-        if (Input.GetButton("Jump"))
-        {
-            setAnimation("Jumping");
-        }
-
-        if (Input.GetButton("Fire1"))
-        {
-            setAnimation("Kicking");
-        }
-
         if (verticalAxis  > 0.0)
         {
             setAnimation("Running");
@@ -193,7 +177,17 @@ public class PlayerController : NetworkBehaviour
             angle = horizontalAxis * Time.deltaTime * ROTATION_SPEED;
             transform.Rotate(new Vector3(0.0f, 1.0f, 0.0f), angle);
         }
-	}
+
+        if (Input.GetButton("Jump"))
+        {
+            setAnimation("Jumping");
+        }
+
+        if (Input.GetButton("Fire1"))
+        {
+            setAnimation("Kicking");
+        }
+    }
 
     private void OnDestroy()
     {

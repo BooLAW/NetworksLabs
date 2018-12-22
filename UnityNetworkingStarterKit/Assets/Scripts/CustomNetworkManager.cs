@@ -20,20 +20,6 @@ public class CustomNetworkManager : NetworkManager {
     public int selectedGridIndex = 0;
     public string[] playerNames = new string[] { "Boy", "Girl", "Robot" };
 
-    // Interactive player prefab selection /////////////////////////////////////////
-    private void OnGUI()
-    {
-        if (!isNetworkActive)
-        {
-            selectedGridIndex = GUI.SelectionGrid(
-            new Rect(Screen.width - 200, 10, 200, 50),
-            selectedGridIndex,
-            playerNames,
-            3);
-            playerPrefabIndex = (short)(selectedGridIndex + 1);
-        }
-    }
-
     public override void OnStartServer()
     {
         NetworkServer.RegisterHandler(MsgTypes.PlayerPrefabSelect, OnPrefabResponse);
@@ -81,8 +67,13 @@ public class CustomNetworkManager : NetworkManager {
     public void AddObject(int objIndex, Vector3 pos)
     {
         GameObject newObject = Instantiate<GameObject>(spawnPrefabs[objIndex], pos, Quaternion.identity);
-
         NetworkServer.Spawn(newObject);
     }
 
+    public void AddTemporaryObject(int objIndex, Vector3 pos)
+    {
+        GameObject newObject = Instantiate<GameObject>(spawnPrefabs[objIndex], pos, Quaternion.identity);
+        NetworkServer.Spawn(newObject);
+        Destroy(newObject, 20);
+    }
 }
