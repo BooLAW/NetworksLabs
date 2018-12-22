@@ -45,6 +45,12 @@ private:
 
 	unsigned int _searchDepth;
 
-	// TODO: Add extra attributes and methods?
+	void CreateChildUCP(AgentLocation &LocationUCC);
+	void DestroyChildUCP();
+
+	bool CreateNegotiation(AgentLocation &LOCATIONMCC);
+
+
+	UCPPtr UCP;
 };
 

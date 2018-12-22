@@ -44,5 +44,5 @@ private:
 	uint16_t _contributedItemId; /**< The contributed item. */
 	uint16_t _constraintItemId; /**< The constraint item. */
 
-	UCCPtr _ucc; /**< Child UCC. */
+	UCCPtr UCC; /**< Child UCC. */
 };

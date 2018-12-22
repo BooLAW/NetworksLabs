@@ -108,6 +108,25 @@ bool UCP::RequestForItem()
 	return sendPacketToAgent(LocationUCC.hostIP, LocationUCC.hostPort, stream);
 }
 
+bool UCP::ResultConstraint(bool result)
+{
+	PacketHeader packethead;
+	packethead.packetType = PacketType::ResultForConstraint;
+	packethead.dstAgentId = LocationUCC.agentId;
+	packethead.srcAgentId = this->id();
+
+	RequestForResult body;
+	body.success = result;
+	OutputMemoryStream stream;
+	packethead.Write(stream);
+	body.Write(stream);
+
+	iLog << "UCP::Sending Constraint Result:";
+	iLog << body.success;
+
+	return sendPacketToAgent(LocationUCC.hostIP, LocationUCC.hostPort, stream);
+}
+
 void UCP::createChildMCP(uint16_t newRequestedId)
 {
 	if (MCP != nullptr)

@@ -15,7 +15,6 @@ UCC::UCC(Node *node, uint16_t _contributedItemId, uint16_t _constraintItemId) :
 	// TODO: Save input parameters
 	contributedItemId = _contributedItemId;
 	constraintItemId = _constraintItemId;
-
 }
 
 UCC::~UCC()
@@ -35,7 +34,7 @@ void UCC::OnPacketReceived(TCPSocketPtr socket, const PacketHeader &packetHeader
 	{
 	case PacketType::RequestForItem:
 		if (state() == ST_WAITING_REQUEST) {
-			RequestForItem packetBody;
+			RequestItem packetBody;
 			packetBody.Read(stream);
 			// Sending ConstraintRequest to UCP
 			PacketHeader oPacketHeader;

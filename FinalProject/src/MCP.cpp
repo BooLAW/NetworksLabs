@@ -11,7 +11,7 @@ enum State
 	ST_ITERATING_OVER_MCCs,
 	ST_WAITING_ACCEPTANCE,
 	ST_NEGOTIATIONS,
-
+	ST_WAITING_UCP,
 	ST_NEGOTIATION_FINISHED
 };
 
@@ -39,7 +39,20 @@ void MCP::update()
 
 	case ST_ITERATING_OVER_MCCs:
 		// TODO: Handle this state
+		if (_mccRegisterIndex < _mccRegisters.size()) {
+			CreateNegotiation(_mccRegisters[_mccRegisterIndex]);
+			setState(ST_WAITING_ACCEPTANCE);
+		}
+		else {
+			setState(ST_NEGOTIATION_FINISHED);
+			_mccRegisterIndex = 0;
+		}
 		break;
+	case ST_WAITING_ACCEPTANCE:
+		break;
+	case ST_NEGOTIATIONS:
+		break;
+
 
 	// TODO: Handle other states
 
@@ -50,7 +63,7 @@ void MCP::update()
 void MCP::stop()
 {
 	// TODO: Destroy the underlying search hierarchy (UCP->MCP->UCP->...)
-
+	
 	destroy();
 }
 
@@ -126,4 +139,36 @@ bool MCP::queryMCCsForItem(int itemId)
 
 	// 1) Ask YP for MCC hosting the item 'itemId'
 	return sendPacketToYellowPages(stream);
+}
+
+void MCP::CreateChildUCP(AgentLocation & LocationUCC)
+{
+	if (UCP != nullptr)
+		DestroyChildUCP();//RESET
+	UCP = App->agentContainer->createUCP(node(), requestedItemId(), contributedItemId(), LocationUCC, searchDepth() + 1);//CREATE IT
+
+
+}
+
+void MCP::DestroyChildUCP()
+{
+	if (UCP != nullptr) {
+		UCP->stop();
+		UCP.reset();
+	}
+}
+
+bool MCP::CreateNegotiation(AgentLocation & LOCATIONMCC)
+{
+	PacketHeader packethead;
+	packethead.packetType = PacketType::RequestForNegotiation;
+	packethead.dstAgentId = LOCATIONMCC.agentId;
+	packethead.srcAgentId = this->id();
+
+	OutputMemoryStream stream;
+	packethead.Write(stream);
+
+	iLog << "MCP::Asking Negotiation";
+	return sendPacketToAgent(LOCATIONMCC.hostIP, LOCATIONMCC.hostPort, stream);
+
 }

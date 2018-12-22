@@ -2,7 +2,11 @@
 #include "Globals.h"
 #include "AgentLocation.h"
 
-
+/**
+ * Enumerated type for packets.
+ * There must be a value for each kind of packet
+ * containing extra data besides the Header.
+ */
 enum class PacketType
 {
 	// MCC <-> YP
@@ -127,7 +131,6 @@ public:
 
 
 // UCP <-> UCC
-//CHANGE NAMES
 class RequestItem {
 public:
 	uint16_t Id;
