@@ -33,7 +33,26 @@ void UCP::update()
 	switch (state())
 	{
 		// TODO: Handle states
+	case ST_INIT:
+		success = -1;
+		RequestForItem();
+		setState(ST_ITEM_REQUEST);
+		break;
 
+	case ST_CONSTRAINT_CALCULATING:
+		if (MCP->negotiationFinished()) {
+			if (MCP->negotiationAgreement()) {
+				ResultConstraint(true);
+				success = true;
+
+			}
+			else {
+				ResultConstraint(false);
+				success = false;
+			}
+			setState(ST_CONSTRAINT_SENT);
+		}
+		break;
 	default:;
 	}
 }
@@ -41,7 +60,7 @@ void UCP::update()
 void UCP::stop()
 {
 	// TODO: Destroy search hierarchy below this agent
-
+	DestroyChildMCP();
 	destroy();
 }
 
@@ -130,16 +149,21 @@ bool UCP::ResultConstraint(bool result)
 void UCP::createChildMCP(uint16_t newRequestedId)
 {
 	if (MCP != nullptr)
-		destroyChildMCP();//reset it
+		DestroyChildMCP();//reset it
 	else
 		MCP = App->agentContainer->createMCP(node(), newRequestedId, contributedItemId, searchDepth);//create it
 
 }
 
-void UCP::destroyChildMCP()
+void UCP::DestroyChildMCP()
 {
 	if (MCP != nullptr) {
 		MCP->stop();
 		MCP.reset();
 	}
+}
+
+bool UCP::negotiationClosed()
+{
+	return state() == ST_NEGOTIATION_CLOSED;
 }

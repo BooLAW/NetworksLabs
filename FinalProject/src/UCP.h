@@ -33,7 +33,9 @@ public:
 	bool RequestForItem();
 	bool ResultConstraint(bool result);
 	void createChildMCP(uint16_t newRequestedId);
-	void destroyChildMCP();
+	void DestroyChildMCP();
+
+	bool negotiationClosed();
 
 	MCPPtr MCP;
 

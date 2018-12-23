@@ -128,7 +128,25 @@ public:
 	}
 };
 
+class PacketNegotiationRequest
+{
+public:
 
+	uint16_t _requestedItemId;
+	uint16_t _contributedItemId;
+
+	void Read(InputMemoryStream &stream)
+	{
+		stream.Read(_requestedItemId);
+		stream.Read(_contributedItemId);
+	}
+	void Write(OutputMemoryStream &stream)
+	{
+		stream.Write(_requestedItemId);
+		stream.Write(_contributedItemId);
+	}
+
+};
 
 // UCP <-> UCC
 class RequestItem {

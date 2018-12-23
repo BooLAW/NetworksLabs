@@ -50,7 +50,6 @@ private:
 
 	bool CreateNegotiation(AgentLocation &LOCATIONMCC);
 
-
 	UCPPtr UCP;
 };
 

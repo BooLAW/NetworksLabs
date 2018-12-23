@@ -50,11 +50,23 @@ void MCP::update()
 		break;
 	case ST_WAITING_ACCEPTANCE:
 		break;
-	case ST_NEGOTIATIONS:
-		break;
-
 
 	// TODO: Handle other states
+	case ST_NEGOTIATIONS:
+		if (UCP != nullptr && UCP->negotiationClosed() == true) {
+			if (UCP->success == true) { // Negotiation success
+
+				setState(ST_NEGOTIATION_FINISHED);
+			}
+			else if (UCP->success == false) { // Negotiation failed
+				setState(ST_ITERATING_OVER_MCCs);
+				_mccRegisterIndex++;
+			}
+		}
+		break;
+	case ST_NEGOTIATION_FINISHED:
+		DestroyChildUCP();
+		break;
 
 	default:;
 	}
@@ -64,6 +76,7 @@ void MCP::stop()
 {
 	// TODO: Destroy the underlying search hierarchy (UCP->MCP->UCP->...)
 	
+	DestroyChildUCP();
 	destroy();
 }
 
@@ -105,7 +118,21 @@ void MCP::OnPacketReceived(TCPSocketPtr socket, const PacketHeader &packetHeader
 		break;
 
 	// TODO: Handle other packets
-
+	case PacketType::ReturnForNegotiation:
+		if (state() == ST_WAITING_ACCEPTANCE) {
+			ResponseForNegotiation packetBody;
+			packetBody.Read(stream);
+			if (packetBody.success == true) {
+				iLog << "MCP::Accepted Negotiation";
+				CreateChildUCP(packetBody.LocationUCC);
+				setState(ST_NEGOTIATIONS);
+			}
+			else {
+				setState(ST_ITERATING_OVER_MCCs);
+				_mccRegisterIndex++;
+			}
+		}
+		break;
 	default:
 		wLog << "OnPacketReceived() - Unexpected PacketType.";
 	}
@@ -118,7 +145,11 @@ bool MCP::negotiationFinished() const
 
 bool MCP::negotiationAgreement() const
 {
-	return false; // TODO: Did the child UCP find a solution?
+	if (UCP != nullptr) {
+		return UCP->success == true; // TODO: Did the child UCP find a solution?
+	}
+	else
+		return false; // nope
 }
 
 
@@ -165,8 +196,13 @@ bool MCP::CreateNegotiation(AgentLocation & LOCATIONMCC)
 	packethead.dstAgentId = LOCATIONMCC.agentId;
 	packethead.srcAgentId = this->id();
 
+	PacketNegotiationRequest body;
+	body._requestedItemId = requestedItemId();
+	body._contributedItemId = contributedItemId();
+
 	OutputMemoryStream stream;
 	packethead.Write(stream);
+	body.Write(stream);
 
 	iLog << "MCP::Asking Negotiation";
 	return sendPacketToAgent(LOCATIONMCC.hostIP, LOCATIONMCC.hostPort, stream);

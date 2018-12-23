@@ -87,7 +87,24 @@ void MCC::OnPacketReceived(TCPSocketPtr socket, const PacketHeader &packetHeader
 		break;
 
 	// TODO: Handle other packets
-
+		case PacketType::RequestForNegotiation:
+		if (state() == ST_IDLE) 
+		{
+			AgentLocation uccLoc;
+			createChildUCC();
+			uccLoc.agentId = UCC->id();
+			uccLoc.hostIP = socket->RemoteAddress().GetIPString();
+			uccLoc.hostPort = LISTEN_PORT_AGENTS;
+			acceptNegotiation(socket, packetHeader.srcAgentId, true, uccLoc);
+			setState(ST_NEGOTIATIONS);
+		}
+		else
+		{
+			AgentLocation uccLoc;
+			acceptNegotiation(socket, packetHeader.srcAgentId, false, uccLoc);
+			wLog << "MCC::OnPacketReceived() - PacketType::NegotiationRequest was unexpected.";
+		}
+		break;
 	default:
 		wLog << "OnPacketReceived() - Unexpected PacketType.";
 	}
@@ -108,6 +125,30 @@ bool MCC::negotiationAgreement() const
 	// If this agent finished, means that it was an agreement
 	// Otherwise, it would return to state ST_IDLE
 	return negotiationFinished();
+}
+
+bool MCC::acceptNegotiation(TCPSocketPtr socket, uint16_t dstID, bool accept, AgentLocation &uccLoc)
+{
+	PacketHeader packetHead;
+	packetHead.packetType = PacketType::ReturnForNegotiation;
+	packetHead.srcAgentId = id();
+	packetHead.dstAgentId = dstID;
+
+	ResponseForNegotiation packetBody;
+	packetBody.success = accept;
+	packetBody.LocationUCC = uccLoc;
+
+	// Serialize
+	OutputMemoryStream stream;
+	packetHead.Write(stream);
+	packetBody.Write(stream);
+
+	iLog << "MCC::Sending Negotiation Response";
+	iLog << accept;
+
+	socket->SendPacket(stream.GetBufferPtr(), stream.GetSize());
+
+	return false;
 }
 
 bool MCC::registerIntoYellowPages()
