@@ -163,18 +163,7 @@ public:
 	}
 };
 
-class RequestForConstraint {
-public:
-	uint16_t Id;
-	void Read(InputMemoryStream &stream)
-	{
-		stream.Read(Id);
-	}
-	void Write(OutputMemoryStream &stream)
-	{
-		stream.Write(Id);
-	}
-};
+using RequestForConstraint = RequestItem;
 
 class RequestForResult {
 public:
